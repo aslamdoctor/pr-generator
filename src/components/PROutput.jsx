@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const PROutput = ({ prTitle, prText, checklist }) => {
     const [copied, setCopied] = useState(false);
+    const [titleCopied, setTitleCopied] = useState(false);
 
     const handleCopy = async () => {
         try {
@@ -22,6 +23,30 @@ const PROutput = ({ prTitle, prText, checklist }) => {
                 setTimeout(() => setCopied(false), 2000);
             } catch (err) {
                 console.error('Failed to copy text: ', err);
+            }
+            document.body.removeChild(textArea);
+        }
+    };
+
+    const handleCopyTitle = async () => {
+        try {
+            await navigator.clipboard.writeText(prTitle);
+            setTitleCopied(true);
+            setTimeout(() => setTitleCopied(false), 2000);
+        } catch (err) {
+            // Fallback for browsers that don't support clipboard API
+            const textArea = document.createElement('textarea');
+            textArea.value = prTitle;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                setTitleCopied(true);
+                setTimeout(() => setTitleCopied(false), 2000);
+            } catch (err) {
+                console.error('Failed to copy title: ', err);
             }
             document.body.removeChild(textArea);
         }
@@ -69,7 +94,20 @@ const PROutput = ({ prTitle, prText, checklist }) => {
             {/* PR Title Preview */}
             {prTitle && (
                 <div className="mb-3 p-3 bg-gray-100 border-2 border-gray-300" style={{ borderRadius: '5px' }}>
-                    <p className="text-xs font-semibold text-gray-900 mb-1">PR TITLE</p>
+                    <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-semibold text-gray-900">PR TITLE</p>
+                        <button
+                            onClick={handleCopyTitle}
+                            className={`px-2 py-1 text-xs font-semibold transition-all duration-200 cursor-pointer ${titleCopied
+                                ? 'bg-gray-900 text-white'
+                                : 'bg-white text-gray-900 hover:bg-gray-200 border border-gray-400'
+                                }`}
+                            style={{ borderRadius: '3px' }}
+                            title="Copy PR title"
+                        >
+                            {titleCopied ? '✓' : '📋'}
+                        </button>
+                    </div>
                     <p className="text-xs font-mono text-gray-900">{prTitle}</p>
                 </div>
             )}

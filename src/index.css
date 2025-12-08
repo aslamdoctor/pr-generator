@@ -68,18 +68,49 @@ body {
   font-size: 0.75rem;
 }
 
-.markdown-preview>ul,
-.markdown-preview>ol {
+.markdown-preview ul,
+.markdown-preview ol {
   margin-bottom: 0.5rem;
   padding-left: 1.25rem;
   color: #374151;
   font-size: 0.75rem;
+  list-style-position: outside;
 }
 
-.markdown-preview>ul>li,
-.markdown-preview>ol>li {
+.markdown-preview ul {
+  list-style-type: disc;
+}
+
+.markdown-preview ol {
+  list-style-type: decimal;
+}
+
+.markdown-preview ul li,
+.markdown-preview ol li {
   margin-bottom: 0.125rem;
   line-height: 1.5;
+  margin-left: 0;
+}
+
+/* Checkbox/Task list items - remove bullets and padding */
+.markdown-preview ul li input[type="checkbox"],
+.markdown-preview ul li input[type="checkbox"]~* {
+  list-style: none;
+}
+
+.markdown-preview ul li:has(input[type="checkbox"]) {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.markdown-preview ul:has(li input[type="checkbox"]) {
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.markdown-preview input[type="checkbox"] {
+  margin-right: 0.5rem;
 }
 
 .markdown-preview a {

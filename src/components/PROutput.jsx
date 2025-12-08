@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { marked } from 'marked';
 
 const PROutput = ({ prTitle, prText, checklist }) => {
     const [copied, setCopied] = useState(false);
     const [titleCopied, setTitleCopied] = useState(false);
+    const [activeTab, setActiveTab] = useState('markdown'); // 'markdown' or 'preview'
+
 
     const handleCopy = async () => {
         try {
@@ -86,7 +89,7 @@ const PROutput = ({ prTitle, prText, checklist }) => {
                 <div className="w-full bg-gray-200 h-2 overflow-hidden" style={{ borderRadius: '5px' }}>
                     <div
                         className="h-full bg-black transition-all duration-500 ease-out"
-                        style={{ width: `${completionPercentage}%`, borderRadius: '5px' }}
+                        style={{ width: `${completionPercentage}% `, borderRadius: '5px' }}
                     />
                 </div>
             </div>
@@ -99,8 +102,8 @@ const PROutput = ({ prTitle, prText, checklist }) => {
                         <button
                             onClick={handleCopyTitle}
                             className={`px-2 py-1 text-xs font-semibold transition-all duration-200 cursor-pointer ${titleCopied
-                                ? 'bg-gray-900 text-white'
-                                : 'bg-white text-gray-900 hover:bg-gray-200 border border-gray-400'
+                                    ? 'bg-gray-900 text-white'
+                                    : 'bg-white text-gray-900 hover:bg-gray-200 border border-gray-400'
                                 }`}
                             style={{ borderRadius: '3px' }}
                             title="Copy PR title"
@@ -142,16 +145,46 @@ const PROutput = ({ prTitle, prText, checklist }) => {
                 </div>
             </div>
 
-            {/* PR Text Preview */}
+            {/* PR Text Preview with Tabs */}
             <div className="border-t border-gray-300 pt-3">
-                <h3 className="text-xs font-bold text-gray-900 mb-2">
-                    Preview
-                </h3>
-                <div className="bg-gray-50 p-3 max-h-128 overflow-y-auto custom-scrollbar border border-gray-300" style={{ borderRadius: '5px' }}>
-                    <pre className="text-xs font-mono text-gray-900 whitespace-pre-wrap break-words">
-                        {prText}
-                    </pre>
+                {/* Tab Navigation */}
+                <div className="flex gap-1 mb-0 border-b border-gray-300">
+                    <button
+                        onClick={() => setActiveTab('markdown')}
+                        className={`px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${activeTab === 'markdown'
+                            ? 'bg-white text-gray-900 border-t-2 border-l border-r border-black -mb-px'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
+                            }`}
+                        style={{ borderRadius: '5px 5px 0 0' }}
+                    >
+                        PR Markdown
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('preview')}
+                        className={`px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${activeTab === 'preview'
+                            ? 'bg-white text-gray-900 border-t-2 border-l border-r border-black -mb-px'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
+                            }`}
+                        style={{ borderRadius: '5px 5px 0 0' }}
+                    >
+                        Preview
+                    </button>
                 </div>
+
+                {/* Tab Content */}
+                {activeTab === 'markdown' ? (
+                    <div className="bg-gray-50 p-3 max-h-128 overflow-y-auto custom-scrollbar border-l border-r border-b border-gray-300" style={{ borderRadius: '0 0 5px 5px' }}>
+                        <pre className="text-xs font-mono text-gray-900 whitespace-pre-wrap break-words">
+                            {prText}
+                        </pre>
+                    </div>
+                ) : (
+                    <div
+                        className="bg-white p-4 max-h-128 overflow-y-auto custom-scrollbar border-l border-r border-b border-gray-300 markdown-preview"
+                        style={{ borderRadius: '0 0 5px 5px' }}
+                        dangerouslySetInnerHTML={{ __html: marked(prText) }}
+                    />
+                )}
             </div>
         </div>
     );
